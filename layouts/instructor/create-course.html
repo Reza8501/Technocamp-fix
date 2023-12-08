@@ -62,8 +62,8 @@
 
                                 <div class="course-field mb--15">
                                   <label for="regularPrice-1">Regular Price
-                                    ($)</label>
-                                  <input id="price" type="number" name="price" placeholder="$ Regular Price">
+                                    (Rp)</label>
+                                  <input id="price" type="number" name="price" placeholder="Rp Regular Price">
                                   <small class="d-block mt_dec--5"><i class="feather-info"></i> The Course
                                     Price Includes Your Author Fee.</small>
                                 </div>
@@ -214,15 +214,15 @@
 </script>
 <script>
   $('#createfileImage').click(function (e) {
-      $('#createinputfile').click();
-    });
-    function rbtPreview() {
-      const [file2] = createinputfile.files
-      if (file2) {
-        createfileImage.src = URL.createObjectURL(file2)
-      }
+    $('#createinputfile').click();
+  });
+  function rbtPreview() {
+    const [file2] = createinputfile.files
+    if (file2) {
+      createfileImage.src = URL.createObjectURL(file2)
     }
-    $('#createinputfile').change(function () {
-      rbtPreview(this);
-    });
+  }
+  $('#createinputfile').change(function () {
+    rbtPreview(this);
+  });
 </script>
