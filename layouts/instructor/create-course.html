@@ -25,10 +25,6 @@
                     <div class="course-field mb--15">
                       <label for="content">Content</label>
                       <div id="summernote"></div>
-                      <!-- <textarea id="content" rows="10" name="content"></textarea> -->
-                      <!-- <small class="d-block mt_dec--5"><i class="feather-info"></i> HTML
-                                                        or plain text allowed, no emoji This field is used for search,
-                                                        so please be descriptive!</small> -->
                     </div>
 
                     <div class="course-field mb--15 edu-bg-gray">
@@ -47,7 +43,7 @@
                                 </li>
                                 <li class="nav-item w-100" role="presentation">
                                   <a href="#" id="free-tab" data-bs-toggle="tab" data-bs-target="#free" role="tab"
-                                    aria-controls="free" aria-selected="false">
+                                    aria-controls="free" aria-selected="false" onclick="eventClickFree()">
                                     <span>Free</span>
                                   </a>
                                 </li>
@@ -149,17 +145,20 @@
     ]
   });
 
+  function eventClickFree() {
+    $("#price").val("")
+  }
+
   function postNewCourse() {
     var markupStr = $('#summernote').summernote('code');
-    const payload = {
+    let payload = {
       courseTitle: $("#title").val(),
       courseContent: markupStr,
-      price: parseInt($("#price").val()),
+      price: $("#price").val(),
       isFree: false,
     }
 
-
-    if (payload.price === "" || payload.price === "0" || payload.price === 0) {
+    if (payload.price === "" || payload.price === "0") {
       payload.isFree = true;
       payload.price = 0;
     }

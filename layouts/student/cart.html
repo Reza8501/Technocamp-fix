@@ -46,6 +46,7 @@
           })
           $(".checkout-cart-total").append(`<h4 class="mt--30">Grand Total <span>Rp. ${total}</span></h4>`)
         }
+        $(".btn-order").empty();
         $(".btn-order").append(`<button type="button" class="rbt-btn btn-gradient hover-icon-reverse btn-post-transaction" onclick="postTransaction(this)" data-cartid="${data.data.cartId}">
                             <span class="icon-reverse-wrapper">
                                 <span class="btn-text">Place order</span>
@@ -108,7 +109,7 @@
             showConfirmButton: false,
             timer: 1500
           });
-          window.location.href = "student-dashboard.html";
+          window.location.reload();
         }, 1000)
       });
   }
