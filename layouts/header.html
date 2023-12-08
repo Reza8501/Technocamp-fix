@@ -1,0 +1,109 @@
+<!-- Start Header Area  -->
+<header class="rbt-header rbt-header-10">
+  <div class="rbt-sticky-placeholder"></div>
+  <div class="rbt-header-wrapper header-space-betwween header-sticky">
+    <div class="container-fluid">
+      <div class="mainbar-row rbt-navigation-start align-items-center">
+        <div class="header-left rbt-header-content">
+          <div class="header-info">
+            <div class="logo">
+              <a href="courses.html">
+                <h3>Technocamp</h3>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="rbt-main-navigation d-none d-xl-block">
+          <nav class="mainmenu-nav">
+            <ul class="mainmenu">
+              <li class="with-megamenu has-menu-child-item menu-public-courses">
+                <a href="javascript:void(0)" onclick="eventClickCoursePublic()">Courses</a>
+              </li>
+
+              <li class="has-dropdown has-menu-child-item">
+                <a href="#">Dashboard
+                  <i class="feather-chevron-down"></i>
+                </a>
+                <ul class="submenu"></ul>
+              </li>
+            </ul>
+            </li>
+            </ul>
+          </nav>
+        </div>
+        <div class="header-right">
+
+          <!-- Navbar Icons -->
+          <ul class="quick-access">
+            <li class="access-icon rbt-mini-cart">
+              <a class="rbt-cart-sidenav-activation rbt-round-btn" href="javascript:void(0)" onclick="eventClickCart()">
+                <i class="feather-shopping-cart"></i>
+                <span class="rbt-cart-count">!</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+</header>
+<!-- End Header Area  -->
+
+<!-- Mobile Menu Section -->
+<div class="popup-mobile-menu">
+  <div class="inner-wrapper">
+    <div class="inner-top">
+      <div class="content">
+        <div class="logo">
+          <a href="courses.html">
+            <h3>Technocamp</h3>
+          </a>
+        </div>
+        <div class="rbt-btn-close">
+          <button class="close-button rbt-round-btn"><i class="feather-x"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="mainmenu-nav">
+      <ul class="mainmenu">
+        <li class="with-megamenu has-menu-child-item menu-public-courses">
+          <a href="javascript:void(0)" onclick="eventClickCoursePublic()">Courses</a>
+        </li>
+
+        <li class="has-dropdown has-menu-child-item">
+          <a href="#">Dashboard
+            <i class="feather-chevron-down"></i>
+          </a>
+          <ul class="submenu"></ul>
+      </ul>
+    </nav>
+  </div>
+</div>
+<!-- End Mobile Area  -->
+
+<script>
+  $(document).ready(function () {
+    if (localStorage.getItem("role") === "admin") {
+      $(".submenu").append(`<li class="has-dropdown"><a href="index.html">Instructor Dashboard</a></li>`);
+      $(".quick-access").remove();
+      $(".menu-public-courses").remove();
+    } else if (localStorage.getItem("role") === "client") {
+      $(".submenu").append(`<li class="has-dropdown"><a href="index.html">Student Dashboard</a>`);
+      $(".menu-public-courses").remove();
+    } else {
+      $(".submenu").append(`<li class="has-dropdown"><a href="index.html">Instructor Dashboard</a></li>`);
+      $(".submenu").append(`<li class="has-dropdown"><a href="index.html">Student Dashboard</a>`);
+      $(".quick-access").remove();
+    }
+  });
+</script>
+
+<script>
+  function eventClickCart() {
+    $("#student-content").load("layouts/student/cart.html");
+  }
+
+  function eventClickCoursePublic() {
+    $("#layouts-content").load("layouts/public/index.html");
+  }
+</script>

@@ -1,0 +1,136 @@
+<div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
+  <div class="content">
+    <div class="section-title">
+      <h4 class="rbt-title-style-3">Transactions</h4>
+    </div>
+
+    <div class="rbt-dashboard-table table-responsive mobile-table-750">
+      <table class="rbt-table table table-borderless">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Full Name</th>
+            <th>Method</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Proof</th>
+            <th>Status</th>
+            <th>Action</th>
+            <th></th>
+          </tr>
+        </thead>
+
+        <tbody id="tbody-transaction">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  $(document).ready(function () {
+    fetch("http://localhost:8080/transaction/manual", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.data !== null) {
+          data.data.map((v) => {
+            console.log(v)
+            let statusProof = "pending";
+            if (v.transactionProof !== "") {
+              statusProof = "delivered";
+            }
+            const tbody = `
+              <tr>
+                <td>${v.transactionCode}</td>  
+                <td>${v.user.fullName}</td>  
+                <td>${v.transactionMethod}</td>  
+                <td>${v.createdAt}</td>  
+                <td>Rp ${v.transactionTotal}</td>  
+                <td><a href="javascript:void(0);" onclick="openProof(this)" data-image="${v.transactionProof}">${statusProof}</a></td>
+                <td><span class="rbt-badge-5 bg-color-success-opacity color-success">${v.transactionStatus}</span></td>
+                <td><a class="rbt-btn btn-sm" href="javascript:void(0);" onclick="postApproveTransaction(this)" data-code="${v.transactionCode}">Approve</a></td>
+                <td><a class="rbt-btn btn-sm" href="javascript:void(0);" onclick="postRejectTransaction(this)" data-code="${v.transactionCode}">Reject</a></td>
+              </tr>
+            `
+            $("#tbody-transaction").append(tbody);
+          })
+        }
+      });
+  });
+</script>
+
+<script>
+  function openProof(e) {
+    console.log(e.getAttribute("data-image"))
+    const newWindow = window.open();
+    newWindow.document.write('<img src="' + e.getAttribute("data-image") + '" alt="Base64 Image">');
+  }
+
+  function postApproveTransaction(e) {
+    const payload = {
+      transactionCode: e.getAttribute("data-code"),
+    }
+
+    fetch("http://localhost:8080/transaction/approve", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setTimeout(() => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Success approving transaction",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.reload();
+        }, 500)
+      });
+  }
+
+  function postRejectTransaction(e) {
+    const payload = {
+      transactionCode: e.getAttribute("data-code"),
+    }
+
+    fetch("http://localhost:8080/transaction/reject", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setTimeout(() => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Success rejecting transaction",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.reload();
+        }, 500)
+      });
+  }
+</script>

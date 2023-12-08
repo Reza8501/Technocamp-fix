@@ -1,0 +1,86 @@
+<div class="rbt-breadcrumb-default ptb--100 ptb_md--50 ptb_sm--30 bg-gradient-1">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="breadcrumb-inner text-center">
+          <h2 class="title">Free Courses</h2>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Start Card Style -->
+<div class="rbt-rbt-card-area rbt-section-gap bg-color-white">
+  <div class="container">
+    <!-- Start Card Area -->
+    <div id="list-publish-course" class="row row--15"></div>
+    <!-- End Card Area -->
+  </div>
+</div>
+<!-- End Card Style -->
+
+<script>
+  fetch("http://localhost:8080/course/publish", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id: [],
+      isActive: "1",
+      isFree: "1",
+    }),
+  })
+    .then(res => {
+      return res.json();
+    })
+    .then(data => {
+      data?.data?.map((v) => {
+        const card = `<div class="col-lg-4 col-md-6 col-sm-6 col-12 mt--30">
+                <div class="rbt-card variation-03 rbt-hover">
+                  <div class="rbt-card-img">
+                    <a class="thumbnail-link" href="javascript:void(0)" onclick="eventClickCourseDetailPublic(${v.id})">
+                      <img src="${v.courseImage}" alt="Card image">
+                      <span class="rbt-btn btn-white icon-hover">
+                        <span class="btn-text">Read More</span>
+                        <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                      </span>
+                    </a>
+                  </div>
+                  <div class="rbt-card-body">
+                    <h5 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetailPublic(${v.id})">${v.courseTitle}</a>
+                    </h5>
+                  </div>
+                </div>
+              </div>`;
+        $("#list-publish-course").append(card);
+      })
+    });
+
+    function eventClickCourseDetailPublic(id) {
+      $("#layouts-content").load("layouts/public/course-detail.html");
+
+      fetch("http://localhost:8080/course/publish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: [parseInt(id)],
+        }),
+      })
+        .then(res => {
+          return res.json();
+        })
+        .then(data => {
+          data?.data?.map((v) => {
+            $(".detail-title").append(`<h2 class="title">${v.courseTitle}</h2>`)
+            $(".current-price").append(`Rp. ${v.price}`)
+            $(".thuumbnail").append(`<img class="w-100" src="${v.courseImage}" alt="Card image">`);
+            $(".section-title").append(`<h4 class="rbt-title-style-3">${v.courseTitle}</h4>`);
+            $(".section-content").append(`<p>${v.courseContent}</p>`);
+          });
+        });
+    }
+</script>

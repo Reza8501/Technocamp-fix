@@ -1,0 +1,237 @@
+<div class="rbt-create-course-area bg-color-white rbt-section-gap">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-12">
+        <div class="rbt-accordion-style rbt-accordion-01 rbt-accordion-06 accordion">
+          <div class="accordion" id="tutionaccordionExamplea1">
+            <div class="accordion-item card">
+              <h2 class="accordion-header card-header" id="accOne">
+                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#accCollapseOne" aria-expanded="true" aria-controls="accCollapseOne">Course Info
+                </button>
+              </h2>
+              <input type="text" id="id-course" hidden>
+              <div id="accCollapseOne" class="accordion-collapse collapse show" aria-labelledby="accOne"
+                data-bs-parent="#tutionaccordionExamplea1">
+                <div class="accordion-body card-body">
+                  <!-- Start Course Field Wrapper  -->
+                  <div class="rbt-course-field-wrapper rbt-default-form">
+                    <div class="course-field mb--15">
+                      <label for="title">Course Title</label>
+                      <input id="title" name="title" type="text" placeholder="Title">
+                      <small class="d-block mt_dec--5"><i class="feather-info"></i> Title
+                        should be 30 charecter.</small>
+                    </div>
+
+                    <div class="course-field mb--15">
+                      <label for="content">Content</label>
+                      <div id="summernote"></div>
+                    </div>
+
+                    <div class="course-field mb--15 edu-bg-gray">
+                      <h6>Course Price</h6>
+                      <div class="rbt-course-settings-content">
+                        <div class="row">
+                          <div class="col-lg-4">
+                            <div class="advance-tab-button advance-tab-button-1">
+                              <ul class="rbt-default-tab-button nav nav-tabs" id="coursePrice" role="tablist"
+                                name="isFree">
+                                <li class="nav-item w-100" role="presentation">
+                                  <a href="#" class="active" id="paid-tab" data-bs-toggle="tab" data-bs-target="#paid"
+                                    role="tab" aria-controls="paid" aria-selected="true">
+                                    <span>Paid</span>
+                                  </a>
+                                </li>
+                                <li class="nav-item w-100" role="presentation">
+                                  <a href="#" id="free-tab" data-bs-toggle="tab" data-bs-target="#free" role="tab"
+                                    aria-controls="free" aria-selected="false">
+                                    <span>Free</span>
+                                  </a>
+                                </li>
+                              </ul>
+                            </div>
+                          </div>
+                          <div class="col-lg-8">
+                            <div class="tab-content">
+
+                              <div class="tab-pane fade advance-tab-content-1 active show" id="paid" role="tabpanel"
+                                aria-labelledby="paid-tab">
+
+                                <div class="course-field mb--15">
+                                  <label for="regularPrice-1">Regular Price
+                                    ($)</label>
+                                  <input id="price" type="number" name="price" placeholder="$ Regular Price">
+                                  <small class="d-block mt_dec--5"><i class="feather-info"></i> The Course
+                                    Price Includes Your Author Fee.</small>
+                                </div>
+                              </div>
+
+
+                              <div class="tab-pane fade advance-tab-content-1" id="free" role="tabpanel"
+                                aria-labelledby="free-tab">
+                                <div class="course-field">
+                                  <p class="b3">This Course is free for
+                                    everyone.</p>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="course-field mb--20">
+                      <h6>Course Thumbnail</h6>
+                      <div class="rbt-create-course-thumbnail upload-area">
+                        <div class="upload-area">
+                          <div class="brows-file-wrapper" data-black-overlay="9">
+                            <!-- actual upload which is hidden -->
+                            <input name="createinputfile" id="createinputfile" type="file" class="inputfile" />
+                            <img id="createfileImage" src="assets/images/others/thumbnail-placeholder.svg"
+                              alt="file image" name="courseImage">
+                            <!-- our custom upload button -->
+                            <label class="d-flex" for="createinputfile" title="No File Choosen">
+                              <i class="feather-upload"></i>
+                              <span class="text-center">Choose a File</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <small><i class="feather-info"></i> <b>Size:</b> 700x430 pixels,
+                        <b>File
+                          Support:</b> JPG, JPEG, PNG, GIF, WEBP</small>
+                    </div>
+
+
+                  </div>
+                  <!-- End Course Field Wrapper  -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt--10 row g-5">
+          <div class="col-lg-12">
+            <a class="rbt-btn btn-gradient hover-icon-reverse w-100 text-center" href="javascript:void(0);"
+              onclick="postUpdateCourse()">
+              <span class="icon-reverse-wrapper">
+                <span class="btn-text">Update Course</span>
+                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $('#summernote').summernote({
+    placeholder: 'Type course content here',
+    tabsize: 2,
+    height: 120,
+    toolbar: [
+      ['style', ['style']],
+      ['font', ['bold', 'underline', 'clear']],
+      ['color', ['color']],
+      ['para', ['ul', 'ol', 'paragraph']],
+      ['table', ['table']],
+      ['insert', ['link', 'picture']],
+      ['view', ['fullscreen', 'codeview', 'help']]
+    ]
+  });
+
+  function postUpdateCourse() {
+    const payload = {
+      id: parseInt($("#id-course").val()),
+      courseTitle: $("#title").val(),
+      courseContent: $('#summernote').summernote('code'),
+      price: parseInt($("#price").val()),
+    }
+
+    if (payload.price === 0 || payload.price === "") {
+      payload.isFree = true;
+      payload.price = 0;
+    }
+
+    const file = document.getElementById("createinputfile");
+    if (file.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        const base64String = event.target.result;
+        payload.courseImage = base64String;
+
+        fetch("http://localhost:8080/course/update", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        })
+          .then(response => {
+            return response.json();
+          })
+          .then(data => {
+            setTimeout(() => {
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Success updating course",
+                showConfirmButton: false,
+                timer: 1500
+              });
+
+              window.location.reload();
+            }, 500);
+          });
+      }
+
+      reader.readAsDataURL(file.files[0]);
+    } else {
+      fetch("http://localhost:8080/course/update", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          setTimeout(() => {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Success updating course",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            window.location.reload();
+          }, 500);
+        });
+    }
+
+  }
+</script>
+<script>
+  $('#createfileImage').click(function (e) {
+    $('#createinputfile').click();
+  });
+  function rbtPreview() {
+    const [file2] = createinputfile.files
+    if (file2) {
+      createfileImage.src = URL.createObjectURL(file2)
+    }
+  }
+  $('#createfileImage').change(function () {
+    rbtPreview(this);
+  });
+</script>

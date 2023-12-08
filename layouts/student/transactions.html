@@ -1,0 +1,71 @@
+<div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
+  <div class="content">
+    <div class="section-title">
+      <h4 class="rbt-title-style-3">Transactions History</h4>
+    </div>
+
+    <div class="rbt-dashboard-table table-responsive mobile-table-750">
+      <table class="rbt-table table table-borderless">
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Method</th>
+            <th>Date</th>
+            <th>Total</th>
+            <th>Proof</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="tbody-transaction">
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function () {
+    fetch("http://localhost:8080/transaction/client", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.data !== null) {
+          data.data.map((v) => {
+            let statusProof = "pending";
+            if (v.transactionProof !== "") {
+              statusProof = "delivered";
+            }
+            const tbody = `
+              <tr>
+                <td>${v.transactionCode}</td>  
+                <td>${v.transactionMethod}</td>  
+                <td>${v.createdAt}</td>  
+                <td>Rp ${v.transactionTotal}</td>  
+                <td>${statusProof}</td>
+                <td><span class="rbt-badge-5 bg-color-success-opacity color-success">${v.transactionStatus}</span></td>
+                <td><a class="rbt-btn btn-sm pay" href="javascript:void(0)" onclick="eventClickPay(this)" data-x="${v.transactionCode}">Pay</a></td>
+              </tr>
+            `
+            $("#tbody-transaction").append(tbody);
+          })
+        }
+      });
+  });
+</script>
+<script>
+  function eventClickPay(e) {
+    $("#student-content").empty();
+    $("#student-content").load("layouts/student/proof.html");
+    setTimeout(() => {
+      $("#acc-payment").append(`-<span id="span-trx-code" data-x="${e.getAttribute("data-x")}"> ${e.getAttribute("data-x")}</span >`);
+    }, 500)
+  }
+</script>

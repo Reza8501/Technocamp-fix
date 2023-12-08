@@ -1,0 +1,115 @@
+<div class="checkout_area bg-color-white rbt-section-gap">
+  <div class="container">
+    <div class="row g-12 checkout-form">
+      <div class="col-lg-12">
+        <div class="row pl--50 pl_md--0 pl_sm--0">
+          <!-- Cart Total -->
+          <div class="col-12 mb--60">
+            <div id="cart-id" hidden></div>
+            <h4 class="checkout-title">Cart Total</h4>
+            <div class="checkout-cart-total">
+              <h4>Course <span>Total</span></h4>
+              <ul id="cart-item"></ul>
+            </div>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="col-12 mb--60">
+            <div class="plceholder-button mt--50 btn-order">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  fetch("http://localhost:8080/cart/item", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${localStorage.getItem("token")}`,
+      "Content-Type": "application/json",
+    },
+  })
+    .then(response => {
+      return response.json();
+    })
+    .then(data => {
+      if (data.data !== null) {
+        $("#cart-id").val(data.data.cartId);
+        if (data.data.item !== null) {
+          let total = 0
+          data.data.item.map((v) => {
+            $("#cart-item").append(`<li>${v.courseTitle}<span>Rp. ${v.price} <a href="javascript:void(0)" onclick="postDeleteItem(this)" data-cartid="${data.data.cartId}" data-courseid="${v.id}">delete</a></span></li>`)
+            total = total + v.price;
+          })
+          $(".checkout-cart-total").append(`<h4 class="mt--30">Grand Total <span>Rp. ${total}</span></h4>`)
+        }
+        $(".btn-order").append(`<button type="button" class="rbt-btn btn-gradient hover-icon-reverse btn-post-transaction" onclick="postTransaction(this)" data-cartid="${data.data.cartId}">
+                            <span class="icon-reverse-wrapper">
+                                <span class="btn-text">Place order</span>
+                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                            </span>
+                        </button>`)
+      }
+    });
+
+  function postDeleteItem(ev) {
+    fetch("http://localhost:8080/cart/item/delete", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cartId: ev.getAttribute("data-cartid"),
+        courseId: parseInt(ev.getAttribute("data-courseid")),
+      })
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setTimeout(() => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Success deleting item",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.reload();
+        }, 1000)
+      });
+  }
+
+  function postTransaction(ev) {
+    fetch("http://localhost:8080/transaction/", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        cartId: ev.getAttribute("data-cartid"),
+      })
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        setTimeout(() => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Success place order transaction please sent proof at transaction menu",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.href = "student-dashboard.html";
+        }, 1000)
+      });
+  }
+</script>

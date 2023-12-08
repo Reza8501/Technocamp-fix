@@ -1,0 +1,127 @@
+<div class="rbt-create-course-area bg-color-white rbt-section-gap">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-12">
+        <div class="rbt-accordion-style rbt-accordion-01 rbt-accordion-06 accordion">
+          <div class="accordion" id="tutionaccordionExamplea1">
+            <div class="accordion-item card">
+              <h2 class="accordion-header card-header" id="accOne">
+                <button class="accordion-button acc-payment" id="acc-payment" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#accCollapseOne" aria-expanded="true" aria-controls="accCollapseOne">Paymment
+                </button>
+              </h2>
+              <input id="trx-code" hidden></input>
+              <div id="accCollapseOne" class="accordion-collapse collapse show" aria-labelledby="accOne"
+                data-bs-parent="#tutionaccordionExamplea1">
+                <div class="accordion-body card-body">
+                  <!-- Start Course Field Wrapper  -->
+                  <div class="rbt-course-field-wrapper rbt-default-form">
+                    <div class="course-field mb--20">
+                      <h6>Proof of Payment</h6>
+                      <div class="rbt-create-course-thumbnail upload-area">
+                        <div class="upload-area">
+                          <div class="brows-file-wrapper" data-black-overlay="9">
+                            <!-- actual upload which is hidden -->
+                            <input name="createinputfile" id="createinputfile" type="file" class="inputfile" />
+                            <img id="createfileImage" src="assets/images/others/thumbnail-placeholder.svg"
+                              alt="file image" name="courseImage">
+                            <!-- our custom upload button -->
+                            <label class="d-flex" for="createinputfile" title="No File Choosen">
+                              <i class="feather-upload"></i>
+                              <span class="text-center">Choose a File</span>
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+
+                      <small><i class="feather-info"></i> <b>Size:</b> 700x430 pixels,
+                        <b>File
+                          Support:</b> JPG, JPEG, PNG, GIF, WEBP</small>
+                    </div>
+                  </div>
+                  <!-- End Course Field Wrapper  -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt--10 row g-5">
+          <div class="col-lg-12">
+            <a class="rbt-btn btn-gradient hover-icon-reverse w-100 text-center" href="javascript:void(0);"
+              onclick="postProofPayment()">
+              <span class="icon-reverse-wrapper">
+                <span class="btn-text">Proof</span>
+                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function postProofPayment() {
+    const file = document.getElementById("createinputfile");
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      const base64String = event.target.result;
+      const payload = {
+        transactionCode: $("#span-trx-code").data("x"),
+        proof: base64String,
+      }
+
+      fetch("http://localhost:8080/transaction/proof", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          if (data.statusCode === 200) {
+            setTimeout(() => {
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Success sent proof transaction",
+                showConfirmButton: false,
+                timer: 1500
+              });
+              window.location.reload();
+            }, 500);
+          } else {
+            Swal.fire({
+              position: "top-end",
+              icon: "error",
+              title: "Failed sent proof transaction",
+              showConfirmButton: false,
+              timer: 1500
+            });
+          }
+        });
+    }
+    reader.readAsDataURL(file.files[0]);
+  }
+</script>
+<script>
+  $('#createfileImage').click(function (e) {
+    $('#createinputfile').click();
+  });
+  function rbtPreview() {
+    const [file2] = createinputfile.files
+    if (file2) {
+      createfileImage.src = URL.createObjectURL(file2)
+    }
+  }
+  $('#createinputfile').change(function () {
+    rbtPreview(this);
+  });
+</script>

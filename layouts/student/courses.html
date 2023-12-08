@@ -1,0 +1,341 @@
+<div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
+  <div class="content">
+
+    <div class="section-title">
+      <h4 class="rbt-title-style-3">Courses
+      </h4>
+    </div>
+
+    <div class="advance-tab-button mb--30">
+      <ul class="nav nav-tabs tab-button-style-2 justify-content-start" id="myTab-4" role="tablist">
+        <li role="presentation">
+          <a href="#" class="tab-button active" id="publish-tab-4" data-bs-toggle="tab" data-bs-target="#publish-4"
+            role="tab" aria-controls="publish-4" aria-selected="true">
+            <span class="title">Free</span>
+          </a>
+        </li>
+        <li role="presentation">
+          <a href="#" class="tab-button" id="pending-tab-4" data-bs-toggle="tab" data-bs-target="#pending-4" role="tab"
+            aria-controls="pending-4" aria-selected="false">
+            <span class="title">Paid</span>
+          </a>
+        </li>
+        <li role="presentation">
+          <a href="#" class="tab-button" id="pending-tab-4" data-bs-toggle="tab" data-bs-target="#my-4" role="tab"
+            aria-controls="my-4" aria-selected="false">
+            <span class="title">My Course</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-content">
+      <div class="tab-pane fade active show" id="publish-4" role="tabpanel" aria-labelledby="publish-tab-4">
+        <div id="list-course-active" class="row g-5"></div>
+      </div>
+
+      <div class="tab-pane fade" id="pending-4" role="tabpanel" aria-labelledby="pending-tab-4">
+        <div id="list-course-inactive" class="row g-5"></div>
+      </div>
+
+      <div class="tab-pane fade" id="my-4" role="tabpanel" aria-labelledby="pending-tab-4">
+        <div id="list-course-my" class="row g-5"></div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    const elementCourse = `<div class="col-lg-4 col-md-6 col-12">
+      <div class="rbt-card variation-01 rbt-hover">
+        <div class="rbt-card-img">
+          <a href="course-details.html">
+            <img src="assets/images/course/course-online-01.jpg" alt="Card image">
+          </a>
+        </div>
+        <div class="rbt-card-body">
+          <h4 class="rbt-card-title"><a href="course-details.html">React Front To Back</a>
+          </h4>
+          <ul class="rbt-meta">
+            <li><i class="feather-users"></i>40 Students</li>
+          </ul>
+
+          <div class="rbt-card-bottom">
+            <div class="rbt-price">
+              <span class="current-price">$60</span>
+              <span class="off-price">$120</span>
+            </div>
+            <a class="rbt-btn-link left-icon" href="#"><i class="feather-edit"></i> Edit</a>
+          </div>
+        </div>
+      </div>
+    </div>`
+
+    fetch("http://localhost:8080/course/client/get", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: [],
+        isActive: "1",
+        isFree: "1",
+
+      }),
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.data !== null) {
+          data.data.map((r) => {
+            const elementCourse = `<div class="col-lg-4 col-md-6 col-12">
+              <div class="rbt-card variation-01 rbt-hover">
+                <div class="rbt-card-img">
+                  <a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">
+                    <img src="${r.courseImage}" alt="Card image">
+                  </a>
+                </div>
+                <div class="rbt-card-body">
+                  <h4 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">${r.courseTitle}</a></h4>
+                </div>
+              </div>
+            </div>`;
+
+            $("#list-course-active").append(elementCourse);
+          })
+        }
+      });
+
+    fetch("http://localhost:8080/course/client/get", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: [],
+        isActive: "1",
+        isFree: "0",
+      }),
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.data !== null) {
+          if (localStorage.getItem("role") === "client") {
+            fetch("http://localhost:8080/transaction/client", {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                "Content-Type": "application/json",
+              },
+            })
+              .then(res => {
+                return res.json();
+              })
+              .then(dataClient => {
+                let myCourse = [];
+                if (dataClient.data !== null) {
+                  dataClient.data.map((d) => {
+                    if (d.transactionStatus === "success") {
+                      d.item.map((i) => {
+                        myCourse.push(i.course.id);
+                      })
+                    }
+                  })
+                }
+
+                data.data.map((r) => {
+                  if (!myCourse.includes(r.id)) {
+                    const elementCourse = `<div class="col-lg-4 col-md-6 col-12">
+                      <div class="rbt-card variation-01 rbt-hover">
+                        <div class="rbt-card-img">
+                          <a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">
+                            <img src="${r.courseImage}" alt="Card image">
+                          </a>
+                        </div>
+                        <div class="rbt-card-body">
+                          <h4 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">${r.courseTitle}</a></h4>
+                          <div class="checkout-btn mt--20">
+                              <a class="rbt-btn-link left-icon" href="javascript:void(0);"><i class="feather-user"></i> ${r.buyer.length}</a>
+                              <a class="rbt-btn btn-gradient icon-hover w-100 text-center" href="javascript:void(0);" onclick="postCheckoutCourse(${r.id})">
+                                  <span class="btn-text">Add to Cart</span>
+                                  <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                              </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+
+                    $("#list-course-inactive").append(elementCourse);
+                  }
+                })
+              });
+          } else {
+            data.data.map((r) => {
+              const elementCourse = `<div class="col-lg-4 col-md-6 col-12">
+              <div class="rbt-card variation-01 rbt-hover">
+                <div class="rbt-card-img">
+                  <a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">
+                    <img src="${r.courseImage}" alt="Card image">
+                  </a>
+                </div>
+                <div class="rbt-card-body">
+                  <h4 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">${r.courseTitle}</a></h4>
+                  <div class="checkout-btn mt--20">
+                      <a class="rbt-btn-link left-icon" href="javascript:void(0);"><i class="feather-user"></i> ${r.buyer.length}</a>
+                      <a class="rbt-btn btn-gradient icon-hover w-100 text-center" href="javascript:void(0);" onclick="postCheckoutCourse(${r.id})">
+                          <span class="btn-text">Add to Cart</span>
+                          <span class="btn-icon"><i class="feather-arrow-right"></i></span>
+                      </a>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+              $("#list-course-inactive").append(elementCourse);
+            })
+          }
+        }
+      });
+  </script>
+
+  <script>
+    function postCheckoutCourse(id) {
+      fetch("http://localhost:8080/cart/add-item", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          courseId: id,
+        }),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          setTimeout(() => {
+            Swal.fire({
+              position: "top-end",
+              icon: "success",
+              title: "Success add to cart",
+              showConfirmButton: false,
+              timer: 1500
+            });
+            $("#student-content").load("layouts/student/cart.html");
+          }, 500)
+        });
+    }
+  </script>
+  <script>
+    $(document).ready(function () {
+      fetch("http://localhost:8080/transaction/client", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          if (data.data !== null) {
+            data.data.map((d) => {
+              if (d.transactionStatus === "success") {
+                d.item.map((i) => {
+                  const elementCourseMy = `<div class="col-lg-4 col-md-6 col-12">
+                    <div class="rbt-card variation-01 rbt-hover">
+                      <div class="rbt-card-img">
+                        <a href="javascript:void(0)" onclick="eventClickCourseDetail(${i.course.id})">
+                          <img src="${i.course.courseImage}" alt="Card image">
+                        </a>
+                      </div>
+                      <div class="rbt-card-body">
+                        <h4 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetail(${i.course.id})">${i.course.courseTitle}</a></h4>
+                      </div>
+                    </div>
+                  </div>`;
+
+                  $("#list-course-my").append(elementCourseMy);
+                })
+              }
+            })
+          }
+        });
+    });
+  </script>
+  <script>
+    function eventClickCourseDetail(id) {
+        $("#student-content").empty();
+        $("#student-content").load("layouts/student/courses-details.html");
+        
+        if (localStorage.getItem("role") === "admin") {
+        url = "http://localhost:8080/course/get";
+      } else {
+        url = "http://localhost:8080/course/client/get";
+      }
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: [parseInt(id)],
+        }),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          if (data.data !== null) {
+            data.data.map((v) => {
+              $(".thuumbnail").append(`<img class="w-100" src="${v.courseImage}" alt="Card image">`);
+              $(".section-title-detail").append(`<h4 class="rbt-title-style-3">${v.courseTitle}</h4>`);
+              if (localStorage.getItem("role") === "client" && v.isFree === false) {
+                fetch("http://localhost:8080/transaction/client", {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                  },
+                })
+                  .then(res => {
+                    return res.json();
+                  })
+                  .then(dataClient => {
+                    let isMyCourse = false;
+                    if (dataClient.statusCode === 200 && dataClient.data !== null) {
+                      dataClient.data.map((dc) => {
+                        dc.item.map((di) => {
+                          if (di.course.id === v.id) {
+                            $(".section-content").append(`<p>${v.courseContent}</p>`);
+                            $("#checkout-card").remove();
+                            isMyCourse = true;
+                          }
+                        })
+                      })
+                    }
+
+                    if (!isMyCourse) {
+                      $(".section-content").append(`<p>Locked Course. Please checkout and finish the payment to unlock this course.</p>`);
+                    }
+                  });
+              } else {
+                $(".section-content").append(`<p>${v.courseContent}</p>`);
+              }
+
+              if (v.isFree === true) {
+                $("#checkout-card").remove();
+              }
+            })
+          }
+        });
+    }
+  </script>

@@ -1,0 +1,297 @@
+<div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
+  <div class="content">
+
+    <div class="section-title">
+      <h4 class="rbt-title-style-3">Courses
+      </h4>
+    </div>
+
+    <div class="advance-tab-button mb--30">
+      <ul class="nav nav-tabs tab-button-style-2 justify-content-start" id="myTab-4" role="tablist">
+        <li role="presentation">
+          <a href="#" class="tab-button active" id="publish-tab-4" data-bs-toggle="tab" data-bs-target="#publish-4"
+            role="tab" aria-controls="publish-4" aria-selected="true">
+            <span class="title">Published</span>
+          </a>
+        </li>
+        <li role="presentation">
+          <a href="#" class="tab-button" id="pending-tab-4" data-bs-toggle="tab" data-bs-target="#pending-4" role="tab"
+            aria-controls="pending-4" aria-selected="false">
+            <span class="title">Draft</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div class="tab-content">
+      <div class="tab-pane fade active show" id="publish-4" role="tabpanel" aria-labelledby="publish-tab-4">
+        <div id="list-course-active" class="row g-5"></div>
+      </div>
+
+      <div class="tab-pane fade" id="pending-4" role="tabpanel" aria-labelledby="pending-tab-4">
+        <div id="list-course-inactive" class="row g-5"></div>
+      </div>
+
+      <div class="tab-pane fade" id="draft-4" role="tabpanel" aria-labelledby="draft-tab-4">
+        <div class="row g-5">
+          <div class="col-lg-4 col-md-6 col-12">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    fetch("http://localhost:8080/course/get", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: [],
+        isActive: "1",
+      }),
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.data !== null) {
+          data.data.map((r) => {
+            const elementCourse = `<div class="col-lg-4 col-md-6 col-12">
+              <div class="rbt-card variation-01 rbt-hover">
+                <div class="rbt-card-img">
+                  <a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">
+                    <img src="${r.courseImage}" alt="Card image">
+                  </a>
+                </div>
+                <div class="rbt-card-body">
+                  <h4 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">${r.courseTitle}</a>
+                  </h4>
+
+                  <div class="rbt-card-bottom">
+                    <div class="rbt-price">
+                      <span class="current-price">Rp. ${r.price}</span>
+                    </div>
+                    <a class="rbt-btn-link left-icon" href="javascript:void(0);"><i class="feather-user"></i> ${r.buyer.length}</a>
+                    <a class="rbt-btn-link left-icon" href="javascript:void(0);" onclick="toEdit(${r.id})"><i class="feather-edit"></i> Edit</a>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+            $("#list-course-active").append(elementCourse);
+          })
+        }
+      });
+
+    fetch("http://localhost:8080/course/get", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        id: [],
+        isActive: "2",
+      }),
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        if (data.data !== null) {
+          data.data.map((r) => {
+            const elementCourse = `<div class="col-lg-4 col-md-6 col-12">
+              <div class="rbt-card variation-01 rbt-hover">
+                <div class="rbt-card-img">
+                  <a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">
+                    <img src="${r.courseImage}" alt="Card image">
+                  </a>
+                </div>
+                <div class="rbt-card-body">
+                  <h4 class="rbt-card-title"><a href="javascript:void(0)" onclick="eventClickCourseDetail(${r.id})">${r.courseTitle}</a>
+                  </h4>
+
+                  <div class="rbt-card-bottom">
+                    <div class="rbt-price">
+                      <span class="current-price">Rp. ${r.price}</span>
+                    </div>
+                    <a class="rbt-btn-link left-icon" href="javascript:void(0);"><i class="feather-user"></i> ${r.buyer.length}</a>
+                    <a class="rbt-btn-link left-icon" href="javascript:void(0);" onclick="toEdit(${r.id})"><i class="feather-edit"></i> Edit</a>
+                    <a class="rbt-btn-link left-icon" href="javascript:void(0);" onclick="postPublishCourse(${r.id})"><i class="feather-globe"></i> Publish</a>
+                    <a class="rbt-btn-link left-icon" href="javascript:void(0);" onclick="postDeleteCourse(${r.id})"><i class="feather-trash"></i> Delete</a>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+
+            $("#list-course-inactive").append(elementCourse);
+          })
+        }
+      });
+  </script>
+
+  <script>
+    function toEdit(id) {
+      $("#instructor-content").empty();
+      $("#instructor-content").load("layouts/instructor/courses-edit.html");
+
+      fetch("http://localhost:8080/course/get", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: [parseInt(id)],
+        }),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          if (data.data !== null) {
+            data.data.map((v) => {
+              $("#id-course").val(v.id);
+              $("#title").val(v.courseTitle);
+              $("#summernote").summernote("code", v.courseContent);
+              $("#price").val(v.price);
+              setTimeout(() => {
+                $('#createFileImage').attr("src", v.courseImage);
+              }, 500);
+            })
+          }
+        });
+    }
+  </script>
+
+  <script>
+    function postPublishCourse(id) {
+      const payload = {
+        id: parseInt(id),
+        isActive: true,
+      }
+
+      fetch("http://localhost:8080/course/update", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Success publishing course",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.reload();
+        });
+    }
+
+    function postDeleteCourse(id) {
+      const payload = {
+        id: [parseInt(id)],
+      }
+
+      fetch("http://localhost:8080/course/delete", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          Swal.fire({
+            position: "top-end",
+            icon: "success",
+            title: "Success deleting course",
+            showConfirmButton: false,
+            timer: 1500
+          });
+          window.location.reload();
+        });
+    }
+
+    function eventClickCourseDetail(id) {
+      $("#instructor-content").empty();
+      $("#instructor-content").load("layouts/instructor/courses-details.html");
+
+      if (localStorage.getItem("role") === "admin") {
+        url = "http://localhost:8080/course/get";
+      } else {
+        url = "http://localhost:8080/course/client/get";
+      }
+
+      fetch(url, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          id: [parseInt(id)],
+        }),
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          if (data.data !== null) {
+            data.data.map((v) => {
+              $(".thuumbnail").append(`<img class="w-100" src="${v.courseImage}" alt="Card image">`);
+              $(".section-title-detail").append(`<h4 class="rbt-title-style-3">${v.courseTitle}</h4>`);
+              if (localStorage.getItem("role") === "client" && v.isFree === false) {
+                fetch("http://localhost:8080/transaction/client", {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+                    "Content-Type": "application/json",
+                  },
+                })
+                  .then(res => {
+                    return res.json();
+                  })
+                  .then(dataClient => {
+                    let isMyCourse = false;
+                    if (dataClient.statusCode === 200 && dataClient.data !== null) {
+                      dataClient.data.map((dc) => {
+                        dc.item.map((di) => {
+                          if (di.course.id === v.id) {
+                            $(".section-content").append(`<p>${v.courseContent}</p>`);
+                            $("#checkout-card").remove();
+                            isMyCourse = true;
+                          }
+                        })
+                      })
+                    }
+
+                    if (!isMyCourse) {
+                      $(".section-content").append(`<p>Locked Course. Please checkout and finish the payment to unlock this course.</p>`);
+                    }
+                  });
+              } else {
+                $(".section-content").append(`<p>${v.courseContent}</p>`);
+              }
+
+              if (v.isFree === true) {
+                $("#checkout-card").remove();
+              }
+            })
+          }
+        });
+    }
+  </script>
